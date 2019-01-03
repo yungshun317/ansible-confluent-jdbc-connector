@@ -36,3 +36,27 @@
           - confluent-platform-oss-2.11
 
     # Start confluent
+    - name: Start confluent-zookeeper
+      become: yes
+      shell: systemctl start confluent-zookeeper
+
+    - name: Start confluent-kafka
+      become: yes
+      shell: systemctl start confluent-kafka
+
+    - name: Start confluent-schema-registry
+      become: yes
+      shell: systemctl start confluent-schema-registry
+
+    - name: Start confluent-kafka-connect
+      become: yes
+      shell: systemctl start confluent-kafka-connect
+
+    - name: Start confluent-kafka-rest
+      become: yes
+      shell: systemctl start confluent-kafka-rest
+
+    - name: Start confluent-ksql
+      become: yes
+      shell: systemctl start confluent-ksql
+
