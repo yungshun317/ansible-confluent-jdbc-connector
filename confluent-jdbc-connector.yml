@@ -20,4 +20,19 @@
         repo: deb [arch=amd64] https://packages.confluent.io/deb/4.1 stable main
         state: present
 
-    - 
+    - name: apt-get update
+      become: yes
+      apt: 
+        # upgrade: dist
+        update_cache: yes
+
+    - name: Install the confluent-platform
+      become: yes
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - confluent-platform-oss-2.11
+
+    # Start confluent
