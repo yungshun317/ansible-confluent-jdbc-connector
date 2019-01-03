@@ -60,3 +60,37 @@
       become: yes
       shell: systemctl start confluent-ksql
 
+    # Install confluent-connect-jdbc
+    - name: Download confluent-hub
+      get_url: 
+        url: http://client.hub.confluent.io/confluent-hub-client-latest.tar.gz
+        dest: /home/yungshun/Downloads/confluent-hub-client-latest.tar.gz
+        mode: 0440
+
+    - name: Extract confluent-hub file
+      become: yes
+      unarchive: 
+        src: /home/yungshun/Downloads/confluent-hub-client-latest.tar.gz
+        dest: /usr/local/confluent-hub
+       
+    - name: Install pexpect
+      become: yes
+      pip:
+        name: pexpect
+
+    - name: Install kafka-connect-jdbc
+      become: yes
+      expect:
+        echo: yes
+        command: "/usr/local/confluent-hub/bin/confluent-hub install confluentinc/kafka-connect-jdbc:5.0.1"
+        responses:
+          'Do you want to install this into \/usr\/share\/confluent-hub-components\?': 'y'
+          'I agree to the software license agreement': 'y'
+          'Do you want to uninstall existing version 5.0.1\?': 'N'
+          'Do you want to update all detected configs\?': 'y'
+      ignore_errors: yes
+      register: install_kafka_connect_jdbc
+
+    - name: Debug install_kafka_connect_jdbc
+      debug: 
+        var: install_kafka_connect_jdbc
