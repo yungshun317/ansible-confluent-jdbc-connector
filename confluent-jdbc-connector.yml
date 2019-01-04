@@ -94,3 +94,34 @@
     - name: Debug install_kafka_connect_jdbc
       debug: 
         var: install_kafka_connect_jdbc
+
+    # Start the connector
+    #- name: Create topics
+    #  become: yes
+    #  shell: ./bin/kafka-topics --create --zookeeper localhost:2181 --topic connect-configs --replication-factor 3 --partitions 1 --config cleanup.policy=compact
+    #  args:
+    #    chdir: /usr
+
+    - name: Start the jdbc connector by REST
+      shell: "curl -X POST -H \"Content-Type: application/json\" --data \'{\"name\": \"jdbc-sink\", \"config\": {\"connector.class\":\"io.confluent.connect.jdbc.JdbcSinkConnector\",\"tasks.max\":\"1\",\"topics\":\"orders\",\"connection.url\":\"jdbc:postgresql://localhost:5432/yungshun\",\"connection.user\":\"yungshun\",\"connection.password\":\"lucifer317\",\"auto.create\":\"true\",\"name\":\"jdbc-sink\"}}\' http://localhost:8083/connectors"
+      register: start_jdbc_sink
+
+    - name: Debug start_jdbc_sink
+      debug:
+        var: start_jdbc_sink
+
+    - name: Get the connector status
+      shell: curl -s -X GET http://localhost:8083/connectors/jdbc-sink/status
+      register: get_jdbc_sink_status
+
+    - name: Debug get_jdbc_sink_status
+      debug:
+        var: get_jdbc_sink_status
+
+    - name: Delete the connector
+      shell: curl -X DELETE http://localhost:8083/connectors/jdbc-sink
+      register: delete_jdbc_sink
+
+    - name: Debug delete_jdbc_sink
+      debug:
+        var: delete_jdbc_sink
